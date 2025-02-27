@@ -8,8 +8,7 @@ export interface TelegramUser {
 export interface Company {
     id: string;
     name: string;
-    slug: string;
-    created_at: string;
+    logo: string;
 }
 
 export interface CompanyUser {
@@ -18,4 +17,10 @@ export interface CompanyUser {
     telegram_id: number;
     role: 'admin' | 'user';
     created_at: string;
+}
+
+export interface UserInfo {
+    telegram_id: number;
+    role: 'admin' | 'user';
+    company: Company;
 }

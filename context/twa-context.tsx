@@ -1,5 +1,6 @@
 "use client"
 
+import { UserInfo } from '@/lib/types';
 import { Telegram } from '@twa-dev/types';
 import { createContext, useEffect, useState } from 'react';
 
@@ -11,6 +12,7 @@ declare global {
 
 interface TWAContextProps {
     webApp: Telegram["WebApp"] | undefined;
+    userInfo: UserInfo | undefined;
 }
 
 export const TWAContext = createContext<TWAContextProps | undefined>(undefined)
@@ -18,11 +20,19 @@ export const TWAContext = createContext<TWAContextProps | undefined>(undefined)
 export const TWAProvider = ({ children }: Readonly<{children: React.ReactNode}>) => {
 
     const [webApp, setWebApp] = useState<Telegram["WebApp"]>()
-
+    const [userInfo, setUserInfo] = useState<UserInfo>()
+    
     const getWebApp = async () => {
         const webApp = await waitForWebApp() as Telegram["WebApp"]
         webApp.ready()
         setWebApp(webApp)
+    }
+
+    const getUserInfo = async () => {
+        const response = await fetch(`/api/user?telegramId=${972737130}`)
+        const data = await response.json()
+        setUserInfo(data.data)
+        console.log(data);
     }
 
     const waitForWebApp = () => {
@@ -44,8 +54,14 @@ export const TWAProvider = ({ children }: Readonly<{children: React.ReactNode}>)
         getWebApp()
     }, [])
 
+    useEffect(() => {
+        if (webApp) {
+            getUserInfo()
+        }
+    }, [webApp])
+
     return (
-        <TWAContext.Provider value={{ webApp }}>
+        <TWAContext.Provider value={{ webApp, userInfo }}>
             {children}
         </TWAContext.Provider>
     )
