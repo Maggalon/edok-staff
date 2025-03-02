@@ -19,7 +19,7 @@ interface Branch {
 export default function Home() {
   const [openSelectBranchModal, setOpenSelectBranchModal] = useState<boolean>(false)
   const [openSelectItemModal, setOpenSelectItemModal] = useState<boolean>(false)
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+  // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [branches, setBranches] = useState<Branch[]>()
   const [selectedBranch, setSelectedBranch] = useState<Branch>()
   const [items, setItems] = useState<MenuItem[]>()
@@ -36,18 +36,20 @@ export default function Home() {
   const context = useContext(TWAContext)
   const webApp = context?.webApp
   const userInfo = context?.userInfo
+  const isAuthenticated = context?.isAuthenticated
+  const setIsAuthenticated = context?.setIsAuthenticated
   
-  const checkAuth = async () => {
-    const response = await fetch('/api/session')
-    if (response.ok) {
-        setIsAuthenticated(true)
-        const session = await getSession()
-        console.log(JSON.stringify(session, null, 2))
-        // const webApp = await waitForWebApp() as Telegram["WebApp"];
-        // webApp.ready();
-        // setUserName(webApp!.initDataUnsafe.user?.first_name)
-    }
-  }
+  // const checkAuth = async () => {
+  //   const response = await fetch('/api/session')
+  //   if (response.ok) {
+  //       setIsAuthenticated(true)
+  //       const session = await getSession()
+  //       console.log(JSON.stringify(session, null, 2))
+  //       // const webApp = await waitForWebApp() as Telegram["WebApp"];
+  //       // webApp.ready();
+  //       // setUserName(webApp!.initDataUnsafe.user?.first_name)
+  //   }
+  // }
 
   const authenticateUser = async () => {
 
@@ -71,14 +73,14 @@ export default function Home() {
             })
 
             if (response.ok) {
-                setIsAuthenticated(true)
+                setIsAuthenticated!(true)
             } else {
                 console.error('Authentication failed');
-                setIsAuthenticated(false)
+                setIsAuthenticated!(false)
             }
         } catch (e) {
             console.error('Error during authentication: ', e);
-            setIsAuthenticated(false)
+            setIsAuthenticated!(false)
         }
     }
   }
@@ -160,9 +162,9 @@ export default function Home() {
     console.log(await response.json())
   }
 
-  useEffect(() => {
-    checkAuth()
-  }, [])
+  // useEffect(() => {
+  //   checkAuth()
+  // }, [])
 
   if (!isAuthenticated) {
     return (

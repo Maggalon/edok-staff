@@ -3,6 +3,7 @@
 import { Modal } from "@/components/modal";
 import { TWAContext } from "@/context/twa-context";
 import { Plus, Trash, UsersRound } from "lucide-react";
+import { redirect } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { BeatLoader, ClipLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
@@ -11,6 +12,7 @@ export default function Staff() {
 
     const context = useContext(TWAContext)
     const userInfo = context?.userInfo
+    const isAuthenticated = context?.isAuthenticated
 
     const [addItemLoader, setAddItemLoader] = useState<boolean>(false)
     const [deleteItemLoader, setDeleteItemLoader] = useState<boolean>(false)
@@ -77,6 +79,10 @@ export default function Staff() {
     //         </div>
     //     )
     // }
+
+    if (!isAuthenticated) {
+        redirect('/')
+    }
 
     return (
         <div className="flex flex-col gap-10 h-screen">

@@ -1,5 +1,6 @@
 "use client"
 
+import { getSession } from '@/lib/session';
 import { UserInfo } from '@/lib/types';
 import { Telegram } from '@twa-dev/types';
 import { createContext, useEffect, useState } from 'react';
@@ -13,6 +14,8 @@ declare global {
 interface TWAContextProps {
     webApp: Telegram["WebApp"] | undefined;
     userInfo: UserInfo | undefined;
+    isAuthenticated: boolean;
+    setIsAuthenticated: (isAuthenticated: boolean) => void;
 }
 
 export const TWAContext = createContext<TWAContextProps | undefined>(undefined)
@@ -21,6 +24,7 @@ export const TWAProvider = ({ children }: Readonly<{children: React.ReactNode}>)
 
     const [webApp, setWebApp] = useState<Telegram["WebApp"]>()
     const [userInfo, setUserInfo] = useState<UserInfo>()
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
     
     const getWebApp = async () => {
         const webApp = await waitForWebApp() as Telegram["WebApp"]
@@ -50,18 +54,36 @@ export const TWAProvider = ({ children }: Readonly<{children: React.ReactNode}>)
         });
     };
 
+    const checkAuth = async () => {
+        const response = await fetch('/api/session')
+        if (response.ok) {
+            setIsAuthenticated(true)
+            const session = await getSession()
+            console.log(JSON.stringify(session, null, 2))
+            // const webApp = await waitForWebApp() as Telegram["WebApp"];
+            // webApp.ready();
+            // setUserName(webApp!.initDataUnsafe.user?.first_name)
+        }
+      }
+
     useEffect(() => {
         getWebApp()
     }, [])
 
     useEffect(() => {
         if (webApp) {
-            getUserInfo()
+            checkAuth()
         }
     }, [webApp])
 
+    useEffect(() => {
+        if (webApp && isAuthenticated) {
+            getUserInfo()
+        }
+    }, [isAuthenticated])
+
     return (
-        <TWAContext.Provider value={{ webApp, userInfo }}>
+        <TWAContext.Provider value={{ webApp, userInfo, isAuthenticated, setIsAuthenticated }}>
             {children}
         </TWAContext.Provider>
     )

@@ -3,6 +3,7 @@
 import { Modal } from "@/components/modal";
 import QrReader from "@/components/qr-reader";
 import { TWAContext } from "@/context/twa-context";
+import { redirect } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 
@@ -22,6 +23,7 @@ export default function Scan() {
 
     const context = useContext(TWAContext)
     const userInfo = context?.userInfo
+    const isAuthenticated = context?.isAuthenticated
 
     const [scannedResult, setScannedResult] = useState<string>()
     const [openItemModal, setOpenItemModal] = useState<boolean>(false)
@@ -64,6 +66,10 @@ export default function Scan() {
         console.log(data);
         setConfirmLoader(false)
         setOpenItemModal(false)
+    }
+
+    if (!isAuthenticated) {
+        redirect('/')
     }
 
     return (
