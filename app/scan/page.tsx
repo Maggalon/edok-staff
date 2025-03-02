@@ -5,7 +5,7 @@ import QrReader from "@/components/qr-reader";
 import { TWAContext } from "@/context/twa-context";
 import { redirect } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import { BeatLoader } from "react-spinners";
+import { BeatLoader, ClipLoader } from "react-spinners";
 
 interface ItemInfo {
     quantity: number;
@@ -44,10 +44,10 @@ export default function Scan() {
     }, [reservationId])
 
     const getItemInfo = async () => {
+        setOpenItemModal(true)
         const response = await fetch(`/api/item?reservationId=${reservationId}`)
         const data = await response.json();
         setItemInfo(data.reservation)
-        setOpenItemModal(true)
     }
 
     const handleConfirm = async () => {
@@ -77,6 +77,11 @@ export default function Scan() {
             <QrReader setScannedResult={setScannedResult} scannedResult={scannedResult} />
             <Modal isOpen={openItemModal} onClose={() => setOpenItemModal(false)}>
                 <div>
+                    {!itemInfo &&
+                        <div className="w-full h-50 flex justify-center items-center">
+                            <ClipLoader size={64} color="#7c3aed" />
+                        </div>
+                    }
                     {itemInfo && 
                         <div>
                             <div className="flex gap-2 h-full">
