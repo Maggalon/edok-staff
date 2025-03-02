@@ -55,6 +55,11 @@ export default function Home() {
 
     // setUserName(webApp!.initDataUnsafe.user?.first_name)
 
+    if (!userInfo) {
+      toast.error("Нет доступа", {position: "top-center"})
+      return
+    }
+
     const initData = webApp!.initData;
     
     if (!initData) {

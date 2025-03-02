@@ -4,6 +4,7 @@ import { getSession } from '@/lib/session';
 import { UserInfo } from '@/lib/types';
 import { Telegram } from '@twa-dev/types';
 import { createContext, useEffect, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 
 declare global {
     interface Window {
@@ -35,6 +36,10 @@ export const TWAProvider = ({ children }: Readonly<{children: React.ReactNode}>)
     const getUserInfo = async () => {
         const response = await fetch(`/api/user?telegramId=${webApp!.initDataUnsafe.user!.id}`)
         const data = await response.json()
+        if (data.status == 400) {
+            toast.error("Нет доступа", {position: "top-center"})
+            return
+        }
         setUserInfo(data.data)
         console.log(data);
     }
@@ -72,19 +77,20 @@ export const TWAProvider = ({ children }: Readonly<{children: React.ReactNode}>)
 
     useEffect(() => {
         if (webApp) {
-            checkAuth()
+            getUserInfo()
         }
     }, [webApp])
 
     useEffect(() => {
-        if (webApp && isAuthenticated) {
-            getUserInfo()
+        if (webApp && userInfo) {
+            checkAuth()
         }
-    }, [isAuthenticated])
+    }, [userInfo])
 
     return (
         <TWAContext.Provider value={{ webApp, userInfo, isAuthenticated, setIsAuthenticated }}>
             {children}
+            <ToastContainer className="text-xl font-semibold" />
         </TWAContext.Provider>
     )
 }
