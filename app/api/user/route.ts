@@ -1,6 +1,15 @@
 import { createClient } from "@/lib/supabase/client";
 import { NextRequest, NextResponse } from "next/server";
 
+interface CompanyUser {
+    telegram_id: number;
+    role: string;
+    company: {
+        id: string;
+        name: string;
+        logo?: string;
+    }
+}
 
 export async function GET(req: NextRequest) {
     try {
@@ -21,9 +30,18 @@ export async function GET(req: NextRequest) {
                 )
             `)
             .eq("telegram_id", telegramId)
-            .single()
+            .single() as { data: CompanyUser | null, error: any }
         if (error) return NextResponse.json({ message: error.message, status: 400 })
-
+        
+        if (data) {
+            const storageData = await supabase
+                .storage
+                .from("companies")
+                .createSignedUrl(`${data.company.id}/${data.company.logo}`, 600)
+            console.log(storageData);
+            data.company.logo = storageData.data?.signedUrl
+        }
+        
         return NextResponse.json({ data })
     } catch (e) {
         return NextResponse.json({ error: "Failed getting items of branch", details: e instanceof Error ? e.message : String(e) }, { status: 500 })

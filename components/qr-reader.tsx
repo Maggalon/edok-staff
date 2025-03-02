@@ -4,23 +4,26 @@ import { useEffect, useRef, useState } from "react";
 import "./QrStyles.css";
 import QrScanner from "qr-scanner";
 
-const QrReader = () => {
+const QrReader: React.FC<{ setScannedResult: (res: string) => void; scannedResult: string | undefined }> = ({ setScannedResult, scannedResult }) => {
     // QR States
     const scanner = useRef<QrScanner>(null);
     const videoEl = useRef<HTMLVideoElement>(null);
     const qrBoxEl = useRef<HTMLDivElement>(null);
     const [qrOn, setQrOn] = useState<boolean>(true);
   
-    // Result
-    const [scannedResult, setScannedResult] = useState<string | undefined>("");
-  
     // Success
     const onScanSuccess = (result: QrScanner.ScanResult) => {
       // 🖨 Print the "result" to browser console.
-      console.log(result);
+      //console.log(result.data.trim().replaceAll("\"", ""));
       // ✅ Handle success.
       // 😎 You can do whatever you want with the scanned result.
-      setScannedResult(result?.data);
+      const reservationId = result?.data.trim().replaceAll("\"", "")
+      if (reservationId && reservationId.includes("edok://") && reservationId !== scannedResult) {
+        console.log(reservationId);
+        
+        setScannedResult(reservationId);
+      }
+      
     };
   
     // Fail

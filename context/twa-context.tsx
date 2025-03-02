@@ -29,7 +29,7 @@ export const TWAProvider = ({ children }: Readonly<{children: React.ReactNode}>)
     }
 
     const getUserInfo = async () => {
-        const response = await fetch(`/api/user?telegramId=${972737130}`)
+        const response = await fetch(`/api/user?telegramId=${webApp!.initDataUnsafe.user!.id}`)
         const data = await response.json()
         setUserInfo(data.data)
         console.log(data);

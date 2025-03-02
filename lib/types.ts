@@ -24,3 +24,14 @@ export interface UserInfo {
     role: 'admin' | 'user';
     company: Company;
 }
+
+export interface MenuItem {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  image: string;
+  initialprice: number;
+  weight: number;
+  branchid: string;
+}
