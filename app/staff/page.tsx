@@ -89,7 +89,7 @@ export default function Staff() {
             {userInfo ?
                 <div className='fixed left-2 bg-white font-bold p-3 text-2xl flex gap-3 w-screen shadow-sm items-center justify-start'>
                     <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center flex-shrink-0">
-                        <img src={userInfo.company.logo} alt={userInfo.company.name} className="w-full object-cover" />
+                        <img src={userInfo.company.logo} alt={userInfo.company.name} className="w-full rounded-full object-cover" />
                     </div>
                     {userInfo.company.name}
                 </div> :

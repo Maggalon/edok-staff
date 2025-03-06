@@ -5,6 +5,7 @@ import { TWAContext } from "@/context/twa-context"
 import { getSession } from "@/lib/session"
 import { MenuItem } from "@/lib/types"
 import { useContext, useEffect, useState } from "react"
+import { BeatLoader } from "react-spinners"
 import { toast, ToastContainer } from "react-toastify"
 
 interface Branch {
@@ -27,6 +28,7 @@ export default function Home() {
   const [quantity, setQuantity] = useState<number>()
   const [price, setPrice] = useState<number>()
   const [collectDay, setCollectDay] = useState<"today" | "tomorrow">("today")
+  const [addItemLoader, setAddItemLoader] = useState<boolean>(false)
 
   const [fromHours, setFromHours] = useState<string>("00")
   const [fromMinutes, setFromMinutes] = useState<string>("00")
@@ -135,6 +137,8 @@ export default function Home() {
       return
     }
 
+    setAddItemLoader(true)
+
     let tsRange;
     if (collectDay === 'today') {
       const fromBound = `${new Date().toISOString().split("T")[0]}T${fromHours}:${fromMinutes}:00Z`
@@ -165,6 +169,15 @@ export default function Home() {
     })
 
     console.log(await response.json())
+
+    setAddItemLoader(false)
+    setQuantity(undefined)
+    setPrice(undefined)
+    setFromHours("00")
+    setFromMinutes("00")
+    setToHours("00")
+    setToMinutes("00")
+    setSelectedItem(undefined)
   }
 
   // useEffect(() => {
@@ -184,7 +197,7 @@ export default function Home() {
       {userInfo ?
         <div className='fixed left-2 bg-white font-bold p-3 text-2xl flex gap-3 w-screen shadow-sm items-center justify-start'>
             <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center flex-shrink-0">
-                <img src={userInfo.company.logo} alt={userInfo.company.name} className="w-full object-cover" />
+                <img src={userInfo.company.logo} alt={userInfo.company.name} className="w-full rounded-full object-cover" />
             </div>
             {userInfo.company.name}
         </div> :
@@ -227,12 +240,12 @@ export default function Home() {
             <div className="w-full flex flex-col items-start gap-5">
                 <span className="font-semibold text-primary-600">Когда забирать</span>
                 <div className='flex flex-col gap-4 w-full'>
-                    <div className='flex gap-2 items-center'>
-                        <div onClick={() => setCollectDay("today")} className={`w-5 h-5 ring-2 ring-primary-600 border-4 border-white rounded-full ${collectDay == "today" && "bg-primary-600"}`}></div>
+                    <div onClick={() => setCollectDay("today")} className='flex gap-2 items-center'>
+                        <div className={`w-5 h-5 ring-2 ring-primary-600 border-4 border-white rounded-full ${collectDay == "today" && "bg-primary-600"}`}></div>
                         <span className='text-base'>Сегодня</span>
                     </div>
-                    <div className='flex gap-2 items-center'>
-                        <div onClick={() => setCollectDay("tomorrow")} className={`w-5 h-5 ring-2 ring-primary-600 border-4 border-white rounded-full ${collectDay == "tomorrow" && "bg-primary-600"}`}></div>
+                    <div onClick={() => setCollectDay("tomorrow")} className='flex gap-2 items-center'>
+                        <div className={`w-5 h-5 ring-2 ring-primary-600 border-4 border-white rounded-full ${collectDay == "tomorrow" && "bg-primary-600"}`}></div>
                         <span className='text-base'>Завтра</span>
                     </div>
                 </div>
@@ -278,7 +291,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            <button onClick={addItem} className="w-full bg-primary-600 rounded-lg text-white p-2 hover:bg-primary-700">Добавить</button>
+            <button onClick={addItem} className="w-full bg-primary-600 rounded-lg text-white p-2 active:bg-primary-700 flex items-center justify-center">{addItemLoader ? <BeatLoader className="m-0.5" color="#ffffff" /> :"Добавить"}</button>
           </div>
         }
       </div>
