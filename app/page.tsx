@@ -2,6 +2,7 @@
 
 import { Modal } from "@/components/modal"
 import { TWAContext } from "@/context/twa-context"
+import { createCollectTimeRange } from "@/lib/helpers"
 import { getSession } from "@/lib/session"
 import { MenuItem } from "@/lib/types"
 import { useContext, useEffect, useState } from "react"
@@ -139,22 +140,10 @@ export default function Home() {
 
     setAddItemLoader(true)
 
-    let tsRange;
-    if (collectDay === 'today') {
-      const fromBound = `${new Date().toISOString().split("T")[0]}T${fromHours}:${fromMinutes}:00Z`
-      const toBound = `${new Date().toISOString().split("T")[0]}T${toHours}:${toMinutes}:00Z`
-      tsRange = `[${fromBound}, ${toBound}]`
-      console.log(tsRange);
-      
-    } else {
-      const today = new Date()
-      const tomorrow = new Date()
-      tomorrow.setDate(today.getDate() + 1)
-      const fromBound = `${tomorrow.toISOString().split("T")[0]}T${fromHours}:${fromMinutes}:00Z`
-      const toBound = `${tomorrow.toISOString().split("T")[0]}T${toHours}:${toMinutes}:00Z`
-      tsRange = `[${fromBound}, ${toBound}]`
-      console.log(tsRange);
-    }
+    const { collecttimerange } = createCollectTimeRange(
+      { startHour: fromHours, startMinute: fromMinutes, endHour: toHours, endMinute: toMinutes },
+      collectDay
+    );
     
     const response = await fetch("/api/item", {
       method: "POST",
@@ -163,7 +152,7 @@ export default function Home() {
         quantity: quantity,
         price: price,
         collectDay: collectDay === "today" ? "Сегодня" : "Завтра",
-        collectTimeRange: tsRange,
+        collectTimeRange: collecttimerange,
         menuId: selectedItem!.id
       })
     })
