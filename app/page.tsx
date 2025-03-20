@@ -27,7 +27,7 @@ export default function Home() {
   const [items, setItems] = useState<MenuItem[]>()
   const [selectedItem, setSelectedItem] = useState<MenuItem>()
   const [quantity, setQuantity] = useState<number>()
-  const [price, setPrice] = useState<number>()
+  const [price, setPrice] = useState<number | undefined>()
   const [collectDay, setCollectDay] = useState<"today" | "tomorrow">("today")
   const [addItemLoader, setAddItemLoader] = useState<boolean>(false)
 
@@ -125,7 +125,7 @@ export default function Home() {
       toast.error("Введите количество продукта", {position: "top-center"})
       return
     }
-    if (!price) {
+    if (price === undefined) {
       toast.error("Введите новую стоимость продукта", {position: "top-center"})
       return
     }
